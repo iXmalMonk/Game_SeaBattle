@@ -106,20 +106,21 @@ void hideConsole(bool flag)
 
 struct Loop
 {
-	bool info = false;
-	bool launched = true;
-	bool menu = true;
-	bool play = false;
-	bool preparation = true;
-	bool war = false;
-	bool statistics = false;
+	bool info = false; // информация
+	bool launched = true; // запущен
+	bool menu = true; // меню
+	bool play = false; // игра
+	bool preparation = true; // стадия подготовки
+	bool war = false; // стадия войны
+	bool statistics = false; // стадия статистики
 
-	bool proceed = false;
-	bool proceed_flag = true;
+	bool proceed = false; // продолжить
+	bool proceed_flag = true; // флаг отрисовки кнопки продолжения
 };
 
 struct Mouse
 {
+	// координаты мыши
 	int x = 0;
 	int y = 0;
 };
@@ -133,12 +134,12 @@ struct Png
 	// play_button_for_menu
 	SDL_Rect pbfm_rect;
 	SDL_Texture* pbfm_texture = loadTextureFromFile("png/pbfm.png", &pbfm_rect);
-	SDL_Rect pbfm_rect_dst = { int(WIDTH / 1.25), int(HEIGHT / 10), pbfm_rect.w / 8, pbfm_rect.h / 8 };
+	SDL_Rect pbfm_rect_dst = { int(WIDTH / 1.25), HEIGHT / 10, pbfm_rect.w / 8, pbfm_rect.h / 8 };
 
 	// info_button_for_menu
 	SDL_Rect ibfm_rect;
 	SDL_Texture* ibfm_texture = loadTextureFromFile("png/ibfm.png", &ibfm_rect);
-	SDL_Rect ibfm_rect_dst = { int(WIDTH / 1.25), int(HEIGHT / 3), ibfm_rect.w / 8, ibfm_rect.h / 8 };
+	SDL_Rect ibfm_rect_dst = { int(WIDTH / 1.25), HEIGHT / 3, ibfm_rect.w / 8, ibfm_rect.h / 8 };
 
 	// exit_button_for_menu
 	SDL_Rect ebfm_rect;
@@ -161,33 +162,45 @@ struct Png
 	SDL_Rect p_rect_dst = { WIDTH / 10, HEIGHT / 10, p_rect.w / 8, p_rect.h / 8 };
 };
 
-#define MAX_SHIP 10
-#define MAX_SHIP_4 1
-#define MAX_SHIP_3 2
-#define MAX_SHIP_2 3
-#define MAX_SHIP_1 4
+#define MAX_SHIP 10 // максимальное количество кораблей
+#define MAX_SHIP_4 1 // четырехпалубный
+#define MAX_SHIP_3 2 // трехпалубный
+#define MAX_SHIP_2 3 // двухпалубный
+#define MAX_SHIP_1 4 // однопалубный
 
 struct First_Player
 {
 	// 0 - empty
-	// 1 - ship
+	// 1 - однопалубный
+	// 2 - двухпалубный
+	// 3 - трехпалубный
+	// 4 - четырехпалубный
 	int field[12][12] = { 0 };
+	// trash or -1 - empty
+	// 0 - промах
+	// 1 - убил
+	// 2 - двухпалубный
+	// 3 - трехпалубный
+	// 4 - четырехпалубный
 	int shoot[12][12];
-	int ship_counter = 0;
-	int destroyed_ships = 0;
+	int ship_counter = 0; // количество кораблей
+	int destroyed_ships = 0; // количество уничтоженных кораблей
 
+	// поочередность расстановки кораблей
 	bool _4 = true;
 	bool _3 = false;
 	bool _2 = false;
 	bool _1 = false;
 
-	SDL_Rect f_rect = { 50, 50, 50, 50 };
+	//					x	y	w	h
+	SDL_Rect f_rect = { 50, 50, 50, 50 }; // сетка
 
-	bool queue = true;
-	bool accept = false;
+	bool queue = true; // очередь
+	bool accept = false; // принять
 	//bool ready = false;
-	bool win = false;
+	bool win = false; // победа
 
+	// координаты на сетке
 	int x = 0;
 	int y = 0;
 };
@@ -195,24 +208,36 @@ struct First_Player
 struct Second_Player
 {
 	// 0 - empty
-	// 1 - ship
+	// 1 - однопалубный
+	// 2 - двухпалубный
+	// 3 - трехпалубный
+	// 4 - четырехпалубный
 	int field[12][12] = { 0 };
+	// trash or -1 - empty
+	// 0 - промах
+	// 1 - убил
+	// 2 - двухпалубный
+	// 3 - трехпалубный
+	// 4 - четырехпалубный
 	int shoot[12][12];
-	int ship_counter = 0;
-	int destroyed_ships = 0;
+	int ship_counter = 0; // количество кораблей
+	int destroyed_ships = 0; // количество уничтоженных кораблей
 
+	// поочередность расстановки кораблей
 	bool _4 = true;
 	bool _3 = false;
 	bool _2 = false;
 	bool _1 = false;
 
-	SDL_Rect f_rect = { 730, 50, 50, 50 };
+	//					x	y	w	h
+	SDL_Rect f_rect = { 730, 50, 50, 50 }; // сетка
 
-	bool queue = false;
-	bool accept = false;
+	bool queue = false; // очередь
+	bool accept = false; // принять
 	//bool ready = false;
-	bool win = false;
+	bool win = false; // победа
 
+	// координаты на сетке
 	int x = 0;
 	int y = 0;
 };
@@ -230,14 +255,15 @@ struct Game
 	TTF_Font* font = TTF_OpenFont("fonts/font.ttf", 25);
 	const int fps = 60;
 
-	bool rotate = true;
-	int move = 0;
+	bool rotate = true; // вращение кораблей при стадии планирования
+	int move = 0; // ходы
 };
 
 #pragma endregion
 
 #pragma region 3
 
+// уничтожение текстур
 void destroyTexture(Game& game)
 {
 	SDL_DestroyTexture(game.png.bfm_texture);
@@ -249,6 +275,7 @@ void destroyTexture(Game& game)
 	SDL_DestroyTexture(game.png.p_texture);
 }
 
+// получение размера текста
 int getTextSize(const char* text)
 {
 	int counter = 0;
@@ -258,8 +285,9 @@ int getTextSize(const char* text)
 	return counter;
 }
 
-#define MAX_TEXT 10
+#define MAX_TEXT 10 // размер текста
 
+// напечатать значение
 void printValue(const Game& game, int value, int x, int y, int size)
 {
 	char text[MAX_TEXT];
@@ -279,6 +307,7 @@ void printValue(const Game& game, int value, int x, int y, int size)
 	SDL_DestroyTexture(text_texture);
 }
 
+// напечатать текст
 void printText(const Game& game, const char* text, int x, int y, int size)
 {
 	SDL_Surface* text_surface = TTF_RenderText_Blended(game.font, text, { 0, 0, 0, 255 });
@@ -411,7 +440,7 @@ void events(Game& game)
 		case SDL_MOUSEBUTTONDOWN:
 			if ((game.png.pbfm_rect_dst.x + game.png.pbfm_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.pbfm_rect_dst.x and
 				(game.png.pbfm_rect_dst.y + game.png.pbfm_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.pbfm_rect_dst.y and
-				game.loop.menu)
+				game.loop.menu) // кнопка играть
 			{
 				game.loop.menu = false;
 				game.loop.play = true;
@@ -419,7 +448,7 @@ void events(Game& game)
 
 			if ((game.png.ibfm_rect_dst.x + game.png.ibfm_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.ibfm_rect_dst.x and
 				(game.png.ibfm_rect_dst.y + game.png.ibfm_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.ibfm_rect_dst.y and
-				game.loop.menu)
+				game.loop.menu) // кнопка информации
 			{
 				game.loop.menu = false;
 				game.loop.info = true;
@@ -427,7 +456,7 @@ void events(Game& game)
 
 			if ((game.png.ebfm_rect_dst.x + game.png.ebfm_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.ebfm_rect_dst.x and
 				(game.png.ebfm_rect_dst.y + game.png.ebfm_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.ebfm_rect_dst.y and
-				game.loop.menu)
+				game.loop.menu) // кнопка выхода
 			{
 				game.loop.menu = false;
 				game.loop.launched = false;
@@ -435,7 +464,7 @@ void events(Game& game)
 
 			if ((game.png.a_rect_dst.x + game.png.a_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.a_rect_dst.x and
 				(game.png.a_rect_dst.y + game.png.a_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.a_rect_dst.y and
-				game.loop.play)
+				game.loop.play) // кнопка принятия
 			{
 				if (game.first_player.queue and game.first_player.x != 0 and game.first_player.y != 0) game.first_player.accept = true;
 				if (game.second_player.queue and game.second_player.x != 0 and game.second_player.y != 0) game.second_player.accept = true;
@@ -443,14 +472,14 @@ void events(Game& game)
 
 			if ((game.png.mb_rect_dst.x + game.png.mb_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.mb_rect_dst.x and
 				(game.png.mb_rect_dst.y + game.png.mb_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.mb_rect_dst.y and
-				game.loop.statistics)
+				game.loop.statistics) // кнопка выйти в меню после окончания игры
 			{
 				restart(game);
 			}
 
 			if ((game.png.p_rect_dst.x + game.png.p_rect_dst.w) >= game.mouse.x and game.mouse.x >= game.png.p_rect_dst.x and
 				(game.png.p_rect_dst.y + game.png.p_rect_dst.h) >= game.mouse.y and game.mouse.y >= game.png.p_rect_dst.y and
-				game.loop.menu and game.loop.proceed_flag)
+				game.loop.menu and game.loop.proceed_flag) // кнопка загрузки игры из файла
 			{
 				game.loop.proceed = true;
 			}
@@ -486,6 +515,7 @@ void events(Game& game)
 								{
 									if (game.rotate)
 									{
+										// проверка на правильное расположение трехпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 1; k++)
 											for (int l = -1; l <= 3; l++)
@@ -493,6 +523,7 @@ void events(Game& game)
 												if (game.first_player.field[i + k][j + l] == 1 or game.first_player.field[i + k][j + l] == 2 or
 													game.first_player.field[i + k][j + l] == 3 or game.first_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение трехпалубного корабля
 
 										if (j < 9 and flag)
 										{
@@ -502,6 +533,7 @@ void events(Game& game)
 									}
 									else if (!game.rotate)
 									{
+										// проверка на правильное расположение трехпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 3; k++)
 											for (int l = -1; l <= 1; l++)
@@ -509,6 +541,7 @@ void events(Game& game)
 												if (game.first_player.field[i + k][j + l] == 1 or game.first_player.field[i + k][j + l] == 2 or
 													game.first_player.field[i + k][j + l] == 3 or game.first_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение трехпалубного корабля
 
 										if (i < 9 and flag)
 										{
@@ -524,6 +557,7 @@ void events(Game& game)
 								{
 									if (game.rotate)
 									{
+										// проверка на правильное расположение двухпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 1; k++)
 											for (int l = -1; l <= 2; l++)
@@ -531,6 +565,7 @@ void events(Game& game)
 												if (game.first_player.field[i + k][j + l] == 1 or game.first_player.field[i + k][j + l] == 2 or
 													game.first_player.field[i + k][j + l] == 3 or game.first_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение двухпалубного корабля
 
 										if (j < 10 and flag)
 										{
@@ -540,6 +575,7 @@ void events(Game& game)
 									}
 									else if (!game.rotate)
 									{
+										// проверка на правильное расположение двухпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 2; k++)
 											for (int l = -1; l <= 1; l++)
@@ -547,6 +583,7 @@ void events(Game& game)
 												if (game.first_player.field[i + k][j + l] == 1 or game.first_player.field[i + k][j + l] == 2 or
 													game.first_player.field[i + k][j + l] == 3 or game.first_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение двухпалубного корабля
 
 										if (i < 10 and flag)
 										{
@@ -560,6 +597,7 @@ void events(Game& game)
 								// 1
 								if (game.first_player._1)
 								{
+									// проверка на правильное расположение однопалубного корабля
 									bool flag = true;
 									for (int k = -1; k <= 1; k++)
 										for (int l = -1; l <= 1; l++)
@@ -567,6 +605,7 @@ void events(Game& game)
 											if (game.first_player.field[i + k][j + l] == 1 or game.first_player.field[i + k][j + l] == 2 or
 												game.first_player.field[i + k][j + l] == 3 or game.first_player.field[i + k][j + l] == 4) flag = false;
 										}
+									// проверка на правильное расположение однопалубного корабля
 
 									if (j < 11 and flag)
 									{
@@ -625,6 +664,7 @@ void events(Game& game)
 								{
 									if (game.rotate)
 									{
+										// проверка на правильное расположение трехпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 1; k++)
 											for (int l = -1; l <= 3; l++)
@@ -632,6 +672,7 @@ void events(Game& game)
 												if (game.second_player.field[i + k][j + l] == 1 or game.second_player.field[i + k][j + l] == 2 or
 													game.second_player.field[i + k][j + l] == 3 or game.second_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение трехпалубного корабля
 
 										if (j < 9 and flag)
 										{
@@ -641,6 +682,7 @@ void events(Game& game)
 									}
 									else if (!game.rotate)
 									{
+										// проверка на правильное расположение трехпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 3; k++)
 											for (int l = -1; l <= 1; l++)
@@ -648,6 +690,7 @@ void events(Game& game)
 												if (game.second_player.field[i + k][j + l] == 1 or game.second_player.field[i + k][j + l] == 2 or
 													game.second_player.field[i + k][j + l] == 3 or game.second_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение трехпалубного корабля
 
 										if (i < 9 and flag)
 										{
@@ -663,6 +706,7 @@ void events(Game& game)
 								{
 									if (game.rotate)
 									{
+										// проверка на правильное расположение двухпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 1; k++)
 											for (int l = -1; l <= 2; l++)
@@ -670,6 +714,7 @@ void events(Game& game)
 												if (game.second_player.field[i + k][j + l] == 1 or game.second_player.field[i + k][j + l] == 2 or
 													game.second_player.field[i + k][j + l] == 3 or game.second_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение двухпалубного корабля
 
 										if (j < 10 and flag)
 										{
@@ -679,6 +724,7 @@ void events(Game& game)
 									}
 									else if (!game.rotate)
 									{
+										// проверка на правильное расположение двухпалубного корабля
 										bool flag = true;
 										for (int k = -1; k <= 2; k++)
 											for (int l = -1; l <= 1; l++)
@@ -686,6 +732,7 @@ void events(Game& game)
 												if (game.second_player.field[i + k][j + l] == 1 or game.second_player.field[i + k][j + l] == 2 or
 													game.second_player.field[i + k][j + l] == 3 or game.second_player.field[i + k][j + l] == 4) flag = false;
 											}
+										// проверка на правильное расположение двухпалубного корабля
 
 										if (i < 10 and flag)
 										{
@@ -699,6 +746,7 @@ void events(Game& game)
 								// 1
 								if (game.second_player._1)
 								{
+									// проверка на правильное расположение однопалубного корабля
 									bool flag = true;
 									for (int k = -1; k <= 1; k++)
 										for (int l = -1; l <= 1; l++)
@@ -706,6 +754,7 @@ void events(Game& game)
 											if (game.second_player.field[i + k][j + l] == 1 or game.second_player.field[i + k][j + l] == 2 or
 												game.second_player.field[i + k][j + l] == 3 or game.second_player.field[i + k][j + l] == 4) flag = false;
 										}
+									// проверка на правильное расположение однопалубного корабля
 
 									if (j < 11 and flag)
 									{
@@ -756,9 +805,12 @@ void menu(const Game& game)
 
 // 1 - first_player
 // 2 - second_player
+// grid - сетка
+// ship - отрисовка кораблей при подготовке
+// shoot - отрисовка военных событий
 void field(const Game& game, int grid, int ship, int shoot)
 {
-	if (game.loop.preparation and game.first_player.queue)
+	if (game.loop.preparation and game.first_player.queue) // отрисока кораблей при расстановке
 	{
 		SDL_Rect first_temporary = { game.first_player.f_rect.x, game.first_player.f_rect.y, game.first_player.f_rect.w, game.first_player.f_rect.h };
 
@@ -768,7 +820,7 @@ void field(const Game& game, int grid, int ship, int shoot)
 			{
 				if (game.first_player.x - 1 == i and game.first_player.y - 1 == j)
 				{
-					SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255); // gray
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // blue
 					// 4
 					if (game.first_player._4)
 					{
@@ -935,7 +987,7 @@ void field(const Game& game, int grid, int ship, int shoot)
 			printValue(game, i + 1, game.first_player.f_rect.x - 35, y, 22);
 	}
 
-	if (game.loop.preparation and game.second_player.queue)
+	if (game.loop.preparation and game.second_player.queue) // отрисока кораблей при расстановке
 	{
 		SDL_Rect second_temporary = { game.second_player.f_rect.x, game.second_player.f_rect.y, game.second_player.f_rect.w, game.second_player.f_rect.h };
 
@@ -945,7 +997,7 @@ void field(const Game& game, int grid, int ship, int shoot)
 			{
 				if (game.second_player.x - 1 == i and game.second_player.y - 1 == j)
 				{
-					SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255); // gray
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // blue
 					// 4
 					if (game.second_player._4)
 					{
@@ -1113,7 +1165,7 @@ void field(const Game& game, int grid, int ship, int shoot)
 	}
 }
 
-void preparation(Game& game)
+void preparation(Game& game) // подготовка
 {
 	if (game.first_player.queue)
 	{
@@ -1122,6 +1174,12 @@ void preparation(Game& game)
 		printText(game, "Player 1", WIDTH / 4 * 3 - game.first_player.f_rect.w, HEIGHT / 2, 50);
 		printText(game, "x:", WIDTH / 4 * 3 - game.first_player.f_rect.w, HEIGHT / 4 * 3 - game.first_player.f_rect.h, 50);
 		printText(game, "y:", WIDTH / 4 * 3 - game.first_player.f_rect.w - 100, HEIGHT / 4 * 3 + game.first_player.f_rect.h, 50);
+
+		printText(game, "Rotate:", WIDTH / 4 * 3 - game.first_player.f_rect.w * 3, HEIGHT / 5, 25);
+		if (game.rotate)
+			printText(game, "horizontal", WIDTH / 4 * 3, HEIGHT / 5, 25);
+		else
+			printText(game, "vertical", WIDTH / 4 * 3, HEIGHT / 5, 25);
 
 		printValue(game, game.first_player.x, WIDTH / 4 * 3 - game.first_player.f_rect.w, HEIGHT / 4 * 3 + game.first_player.f_rect.h, 50);
 		printValue(game, game.first_player.y, WIDTH / 4 * 3 + game.first_player.f_rect.w, HEIGHT / 4 * 3 - game.first_player.f_rect.h, 50);
@@ -1220,9 +1278,15 @@ void preparation(Game& game)
 	{
 		field(game, 2, 2, 0);
 
-		printText(game, "Player 2", WIDTH / 4 * 1 - game.first_player.f_rect.w, HEIGHT / 2, 50);
+		printText(game, "Player 2", WIDTH / 4 * 1 - game.second_player.f_rect.w, HEIGHT / 2, 50);
 		printText(game, "x:", WIDTH / 4 * 1 - game.second_player.f_rect.w, HEIGHT / 4 * 3 - game.second_player.f_rect.h, 50);
 		printText(game, "y:", WIDTH / 4 * 1 - game.second_player.f_rect.w - 100, HEIGHT / 4 * 3 + game.second_player.f_rect.h, 50);
+
+		printText(game, "Rotate:", WIDTH / 4 * 1 - game.second_player.f_rect.w * 3, HEIGHT / 5, 25);
+		if (game.rotate)
+			printText(game, "horizontal", WIDTH / 4 * 1, HEIGHT / 5, 25);
+		else
+			printText(game, "vertical", WIDTH / 4 * 1, HEIGHT / 5, 25);
 
 		printValue(game, game.second_player.x, WIDTH / 4 * 1 - game.second_player.f_rect.w, HEIGHT / 4 * 3 + game.second_player.f_rect.h, 50);
 		printValue(game, game.second_player.y, WIDTH / 4 * 1 + game.second_player.f_rect.w, HEIGHT / 4 * 3 - game.second_player.f_rect.h, 50);
@@ -1321,7 +1385,7 @@ void preparation(Game& game)
 	}
 }
 
-void war(Game& game)
+void war(Game& game) // война
 {
 	printText(game, "Destroyed ships:", game.first_player.f_rect.x, HEIGHT - game.first_player.f_rect.h * 3, 25);
 	printValue(game, game.first_player.destroyed_ships, game.first_player.f_rect.x * 6 + game.first_player.f_rect.w, HEIGHT - game.first_player.f_rect.h * 3, 25);
@@ -1462,6 +1526,7 @@ void war(Game& game)
 	for (int i = 1; i < 11; i++)
 		for (int j = 1; j < 11; j++)
 		{
+			// определение зоны мимо
 			if (game.first_player.shoot[i][j] == 1)
 			{
 				for (int k = -1; k <= 1; k++)
@@ -1483,7 +1548,9 @@ void war(Game& game)
 							game.second_player.shoot[i + k][j + l] != 4) game.second_player.shoot[i + k][j + l] = 0;
 					}
 			}
+			// определение зоны мимо
 
+			// уничтожение двухпалубного корабля
 			if (game.first_player.shoot[i][j] == 2)
 			{
 				for (int k = -1; k <= 1; k++)
@@ -1511,7 +1578,9 @@ void war(Game& game)
 						}
 					}
 			}
+			// уничтожение двухпалубного корабля
 
+			// уничтожение трехпалубного корабля
 			if (game.first_player.shoot[i][j] == 3)
 			{
 				for (int k = -1; k <= 1; k++)
@@ -1561,6 +1630,7 @@ void war(Game& game)
 						}
 					}
 			}
+			// уничтожение трехпалубного корабля
 		}
 	//
 
@@ -1574,6 +1644,7 @@ void war(Game& game)
 			if (game.second_player.shoot[i][j] == 4) second_4++;
 		}
 
+	// уничтожение четырехпалубного корабля
 	if (first_4 == 4)
 	{
 		for (int i = 1; i < 11; i++)
@@ -1589,6 +1660,7 @@ void war(Game& game)
 				if (game.second_player.shoot[i][j] == 4) game.second_player.shoot[i][j] = 1;
 		game.first_player.destroyed_ships++;
 	}
+	// уничтожение четырехпалубного корабля
 
 	field(game, 1, 0, 1);
 	field(game, 2, 0, 2);
